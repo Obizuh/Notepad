@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.notepad.utils.DBUtils;
@@ -55,12 +56,10 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
             et_content.setText(intent.getStringExtra("content"));
             tv_time.setText(intent.getStringExtra("time"));
             tv_time.setVisibility(View.VISIBLE);
-            // 初始化字符计数
             tv_char_count.setText(et_content.getText().length() + " 字");
         } else {
             tv_main_title.setText(" 添加心事 ");
             tv_time.setVisibility(View.GONE);
-            // 初始化字符计数
             tv_char_count.setText("0 字");
         }
     }
@@ -74,8 +73,8 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Update character count
                 tv_char_count.setText(s.length() + " 字");
+                autoSave();
             }
 
             @Override
@@ -85,46 +84,43 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
         });
     }
 
-    @Override
-    public void onClick(View v) {
-        int viewId = v.getId(); // 获取点击的视图 ID
+    private void autoSave() {
+        String title = et_title.getText().toString().trim();
+        String content = et_content.getText().toString().trim();
+        String time = DBUtils.getTime();
 
-        if (viewId == R.id.tv_back) { // 返回键的点击事件
-            finish(); // 结束当前活动
-        } else if (viewId == R.id.iv_del) { // "清空" 按钮的点击事件
-            et_content.setText(""); // 清空内容输入框
-        } else if (viewId == R.id.iv_save) { // "保存" 按钮的点击事件
-            // 获取输入的事件标题
-            String title = et_title.getText().toString().trim();
-            // 获取输入的事件内容
-            String content = et_content.getText().toString().trim();
-
-            if (id != 0) { // 修改界面
-                if (content.length() > 0) { // 检查内容是否为空
-                    if (dbUtils.updateNote(id, title, content, DBUtils.getTime())) {
-                        showToast("修改成功"); // 提示修改成功
-                        setResult(2); // 设置结果码
-                        finish(); // 结束当前活动
-                    } else {
-                        showToast("修改失败"); // 提示修改失败
-                    }
-                } else {
-                    showToast("修改内容不能为空!"); // 提示内容不能为空
-                }
-            } else { // 添加记录界面
-                if (content.length() > 0) { // 检查内容是否为空
-                    if (dbUtils.saveNote(title, content, DBUtils.getTime())) {
-                        showToast("保存成功"); // 提示保存成功
-                        setResult(2); // 设置结果码
-                        finish(); // 结束当前活动
-                    } else {
-                        showToast("保存失败"); // 提示保存失败
-                    }
-                } else {
-                    showToast("添加的心事不能为空!"); // 提示内容不能为空
-                }
+        if (id != 0) {
+            if (content.length() > 0) {
+                dbUtils.updateNote(id, title, content, time);
+            }
+        } else {
+            if (content.length() > 0) {
+                id = dbUtils.saveNoteAndGetId(title, content, time);
             }
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        int viewId = v.getId();
+
+        if (viewId == R.id.tv_back) {
+            autoSave();
+            finish();
+        } else if (viewId == R.id.iv_del) {
+            et_content.setText("");
+        } else if (viewId == R.id.iv_save) {
+            autoSave();
+            showToast("保存成功");
+            setResult(2);
+            finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        autoSave();
+        super.onBackPressed();
     }
 
     public void showToast(String message) {

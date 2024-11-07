@@ -1,12 +1,12 @@
 package com.example.notepad.utils;
-import android.annotation.SuppressLint;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.notepad.sqlite.SQLiteHelper;
 import com.example.notepad.bean.NoteBean;
+import com.example.notepad.sqlite.SQLiteHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,68 +29,77 @@ public class DBUtils {
         }
         return instance;
     }
-    @SuppressLint("Range")
-    //查询
+
     public List<NoteBean> queryNote() {
-        List<NoteBean> list = new ArrayList<NoteBean>();
-        String sql = "SELECT * FROM " + SQLiteHelper.U_NOTEPAD + " ORDER BY id DESC";
+        List<NoteBean> list = new ArrayList<>();
+        String sql = "SELECT * FROM " + SQLiteHelper.U_NOTEPAD + " ORDER BY time DESC";
         Cursor cursor = db.rawQuery(sql, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 NoteBean bean = new NoteBean();
-                int id = cursor.getInt(cursor.getColumnIndex("id"));
-                String title = cursor.getString(cursor.getColumnIndex("title"));
-                String content = cursor.getString(cursor.getColumnIndex("content"));
-                String time = cursor.getString(cursor.getColumnIndex("time"));
-                bean.setId(id);
-                bean.setTitle(title);
-                bean.setContent(content);
-                bean.setTime(time);
+                bean.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                bean.setTitle(cursor.getString(cursor.getColumnIndex("title")));
+                bean.setContent(cursor.getString(cursor.getColumnIndex("content")));
+                bean.setTime(cursor.getString(cursor.getColumnIndex("time")));
                 list.add(bean);
             }
             cursor.close();
         }
         return list;
     }
+
     public static String getTime() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
         Date date = new Date(System.currentTimeMillis());
         return simpleDateFormat.format(date);
     }
-    //保存
-    public boolean saveNote(String title, String content,String time) {
-        boolean saveSuccess = false;
-        ContentValues cv = new ContentValues();
-        cv.put("title", title);
-        cv.put("content", content);
-        cv.put("time", getTime()); // 获取当前时间并保存
 
-        long rowId = db.insert(SQLiteHelper.U_NOTEPAD, null, cv);
-        if (rowId > 0) {
-            saveSuccess = true;
-        }
-        return saveSuccess;
-    }
-    //修改
-    public boolean updateNote(int id, String title, String content, String time) {
-        boolean updateSuccess = false;
+    public boolean saveNote(String title, String content, String time) {
         ContentValues cv = new ContentValues();
         cv.put("title", title);
         cv.put("content", content);
         cv.put("time", time);
-        int rows = db.update(SQLiteHelper.U_NOTEPAD, cv, "id=?", new String[]{id + ""});
-        if (rows > 0) {
-            updateSuccess = true;
-        }
-        return updateSuccess;
+
+        long rowId = db.insert(SQLiteHelper.U_NOTEPAD, null, cv);
+        return rowId > 0;
     }
-    //删除
-    public boolean deleteNote(int id) {
-        boolean delSuccess = false;
-        int rows = db.delete(SQLiteHelper.U_NOTEPAD, "id=?", new String[]{String.valueOf(id)});
-        if (rows > 0) {
-            delSuccess = true;
+
+    public int saveNoteAndGetId(String title, String content, String time) {
+        ContentValues cv = new ContentValues();
+        cv.put("title", title);
+        cv.put("content", content);
+        cv.put("time", time);
+
+        long rowId = db.insert(SQLiteHelper.U_NOTEPAD, null, cv);
+        if (rowId != -1) {
+            Cursor cursor = db.rawQuery("SELECT last_insert_rowid()", null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int id = cursor.getInt(0);
+                cursor.close();
+                return id;
+            }
         }
-        return delSuccess;
+        return -1;
+    }
+
+    public boolean updateNoteTime(int id, String time) {
+        ContentValues cv = new ContentValues();
+        cv.put("time", time);
+        int rows = db.update(SQLiteHelper.U_NOTEPAD, cv, "id=?", new String[]{String.valueOf(id)});
+        return rows > 0;
+    }
+
+    public boolean updateNote(int id, String title, String content, String time) {
+        ContentValues cv = new ContentValues();
+        cv.put("title", title);
+        cv.put("content", content);
+        cv.put("time", time);
+        int rows = db.update(SQLiteHelper.U_NOTEPAD, cv, "id=?", new String[]{String.valueOf(id)});
+        return rows > 0;
+    }
+
+    public boolean deleteNote(int id) {
+        int rows = db.delete(SQLiteHelper.U_NOTEPAD, "id=?", new String[]{String.valueOf(id)});
+        return rows > 0;
     }
 }

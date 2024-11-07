@@ -10,26 +10,32 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
     private static final int SPLASH_DURATION = 2000; // 2 seconds
+    private Handler handler;
+    private Runnable runnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        TextView tvSkip = findViewById(R.id.tv_skip);
-        tvSkip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                navigateToMain();
-            }
-        });
-
-        new Handler().postDelayed(new Runnable() {
+        handler = new Handler();
+        runnable = new Runnable() {
             @Override
             public void run() {
                 navigateToMain();
             }
-        }, SPLASH_DURATION);
+        };
+
+        TextView tvSkip = findViewById(R.id.tv_skip);
+        tvSkip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handler.removeCallbacks(runnable);
+                navigateToMain();
+            }
+        });
+
+        handler.postDelayed(runnable, SPLASH_DURATION);
     }
 
     private void navigateToMain() {
