@@ -108,7 +108,18 @@ public class MainActivity extends AppCompatActivity {
                 if (dbUtils.deleteNote(noteBean.getId())) {
                     list.remove(position);
                     adapter.notifyItemRemoved(position);
+                    adapter.notifyItemRangeChanged(position, list.size());
                     Toast.makeText(MainActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
+
+                    // Check if the list is empty and update the visibility of the initial message and RecyclerView
+                    TextView tvInitialMessage = findViewById(R.id.tv_initial_message);
+                    if (list.isEmpty()) {
+                        tvInitialMessage.setVisibility(View.VISIBLE);
+                        rv_list.setVisibility(View.GONE);
+                    } else {
+                        tvInitialMessage.setVisibility(View.GONE);
+                        rv_list.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         });

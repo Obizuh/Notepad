@@ -17,7 +17,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/isvg_del"
-            app:tint="@android:color/white" />
+            app:tint="@android:color/white"
+            android:scaleX="0.62"
+            android:scaleY="0.62"/>
 
         <TextView
             android:layout_width="wrap_content"
