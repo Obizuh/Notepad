@@ -3,6 +3,7 @@ package com.example.notepad;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initLauncher();
         init();
+        setupGlobalTouchListener();
     }
 
     private void initLauncher() {
@@ -151,5 +153,19 @@ public class MainActivity extends AppCompatActivity {
             tvInitialMessage.setVisibility(View.GONE);
             rv_list.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void setupGlobalTouchListener() {
+        View rootView = findViewById(android.R.id.content);
+        rootView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (adapter.getOpenSwipeLayout() != null) {
+                    adapter.getOpenSwipeLayout().close(true);
+                    adapter.setOpenSwipeLayout(null);
+                }
+                return false;
+            }
+        });
     }
 }

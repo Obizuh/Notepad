@@ -23,6 +23,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     private Context context;
     private List<NoteBean> list;
     private ItemClickListener itemClickListener;
+    private SwipeRevealLayout openSwipeLayout;
 
     public NoteAdapter(Context context, ItemClickListener itemClickListener) {
         this.context = context;
@@ -32,6 +33,14 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     public void setData(List<NoteBean> list) {
         this.list = list;
         notifyDataSetChanged();
+    }
+
+    public SwipeRevealLayout getOpenSwipeLayout() {
+        return openSwipeLayout;
+    }
+
+    public void setOpenSwipeLayout(SwipeRevealLayout openSwipeLayout) {
+        this.openSwipeLayout = openSwipeLayout;
     }
 
     @Override
@@ -47,8 +56,17 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         holder.tv_content.setText(note.getContent());
         holder.tv_time.setText(note.getTime());
 
-        holder.ll_item.setOnClickListener(v -> itemClickListener.onItemClick(v, position));
+        holder.ll_item.setOnClickListener(v -> {
+            if (openSwipeLayout != null && openSwipeLayout != holder.swipeRevealLayout) {
+                openSwipeLayout.close(true);
+            }
+            itemClickListener.onItemClick(v, position);
+        });
+
         holder.ll_item.setOnLongClickListener(v -> {
+            if (openSwipeLayout != null && openSwipeLayout != holder.swipeRevealLayout) {
+                openSwipeLayout.close(true);
+            }
             itemClickListener.onItemLongClick(v, position);
             return true;
         });
@@ -62,13 +80,18 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         holder.swipeRevealLayout.setSwipeListener(new SwipeRevealLayout.SwipeListener() {
             @Override
             public void onClosed(SwipeRevealLayout view) {
-                // 重置颜色
+                if (openSwipeLayout == holder.swipeRevealLayout) {
+                    openSwipeLayout = null;
+                }
                 holder.btn_delete.setColorFilter(Color.parseColor("#FFCDD2"));
             }
 
             @Override
             public void onOpened(SwipeRevealLayout view) {
-                // 颜色渐变动画
+                if (openSwipeLayout != null && openSwipeLayout != holder.swipeRevealLayout) {
+                    openSwipeLayout.close(true);
+                }
+                openSwipeLayout = holder.swipeRevealLayout;
                 ObjectAnimator colorAnim = ObjectAnimator.ofInt(holder.btn_delete, "colorFilter",
                         Color.parseColor("#FFCDD2"), Color.parseColor("#D32F2F"));
                 colorAnim.setDuration(300);
@@ -78,7 +101,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 
             @Override
             public void onSlide(SwipeRevealLayout view, float slideOffset) {
-                // 可选：处理滑动事件
+                // Optional: Handle slide event
             }
         });
     }

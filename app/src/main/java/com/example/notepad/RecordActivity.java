@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.notepad.utils.DBUtils;
@@ -74,8 +75,9 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Update character count
-                tv_char_count.setText(s.length() + " 字");
+                // Update character count excluding newline characters
+                int charCount = s.toString().replace("\n", "").length();
+                tv_char_count.setText(charCount + " 字");
             }
 
             @Override
