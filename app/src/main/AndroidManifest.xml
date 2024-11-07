@@ -30,5 +30,6 @@
         <activity
             android:name=".RecordActivity"
             android:exported="false" />
+
     </application>
 </manifest>
