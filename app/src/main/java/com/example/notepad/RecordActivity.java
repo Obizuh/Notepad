@@ -75,7 +75,7 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // Update character count
-                tv_char_count.setText(s.length() + " characters");
+                tv_char_count.setText(s.length() + " 字");
             }
 
             @Override
