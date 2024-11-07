@@ -28,7 +28,7 @@
         android:layout_below="@id/iv_splash"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:text="小熊软糖记事本"
+        android:text="小熊软糖心事本"
         android:textColor="#B19087"
         android:textSize="36sp"
         android:textStyle="bold" />

@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         dbUtils = new DBUtils(this);
         tv_main_title = findViewById(R.id.tv_main_title);
-        tv_main_title.setText("小熊软糖记事本");
+        tv_main_title.setText("小熊软糖心事本");
         rv_list = findViewById(R.id.rv_list);
         iv_add = findViewById(R.id.iv_add);
         rv_list.setLayoutManager(new LinearLayoutManager(this));
