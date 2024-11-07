@@ -2,6 +2,8 @@ package com.example.notepad;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -12,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.notepad.utils.DBUtils;
 
 public class RecordActivity extends AppCompatActivity implements View.OnClickListener {
-    private TextView tv_time, tv_main_title, tv_back;
+    private TextView tv_time, tv_main_title, tv_back, tv_char_count;
     private EditText et_title, et_content;
     private ImageView iv_del, iv_save;
     private DBUtils dbUtils;
@@ -24,6 +26,7 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_record);
         initView();
         initData();
+        setupTextWatcher();
     }
 
     private void initView() {
@@ -35,6 +38,7 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
         iv_del = findViewById(R.id.iv_del);
         iv_save = findViewById(R.id.iv_save);
         tv_main_title = findViewById(R.id.tv_main_title);
+        tv_char_count = findViewById(R.id.tv_char_count);
 
         tv_back.setOnClickListener(this);
         iv_del.setOnClickListener(this);
@@ -51,10 +55,34 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
             et_content.setText(intent.getStringExtra("content"));
             tv_time.setText(intent.getStringExtra("time"));
             tv_time.setVisibility(View.VISIBLE);
+            // 初始化字符计数
+            tv_char_count.setText(et_content.getText().length() + " 字");
         } else {
             tv_main_title.setText(" 添加心事 ");
             tv_time.setVisibility(View.GONE);
+            // 初始化字符计数
+            tv_char_count.setText("0 字");
         }
+    }
+
+    private void setupTextWatcher() {
+        et_content.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // No action needed before text changes
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Update character count
+                tv_char_count.setText(s.length() + " characters");
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // No action needed after text changes
+            }
+        });
     }
 
     @Override
