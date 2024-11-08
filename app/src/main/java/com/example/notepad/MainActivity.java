@@ -1,6 +1,5 @@
 package com.example.notepad;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -13,7 +12,6 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -79,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onItemLongClick(View v, int position) {
-                AlertDialog dialog;
+                /*AlertDialog dialog;
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
                         .setIcon(R.drawable.iv_del)
                         .setTitle("删除提示")
@@ -102,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                 dialog = builder.create();
-                dialog.show();
+                dialog.show();*/
             }
             @Override
             public void onItemDelete(int position) {
